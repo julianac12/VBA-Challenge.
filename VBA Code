@@ -1,0 +1,108 @@
+Sub stock_analysis():
+
+Dim ws As worksheet
+
+For Each ws In Worksheets
+'set dimensions
+    Dim worksheet As String
+    Dim i As Long
+    Dim tickerount As Long
+    Dim j As Long
+    Dim start As Long
+    Dim rowcount As Long
+    Dim percentchange As Double
+    Dim greatincr As Double
+    Dim greatdecr As Double
+    Dim greatvol As Double
+
+For Each ws In Worksheets
+
+    
+        ' set title row
+        ws.Range("i1").Value = "ticker"
+        ws.Range("j1").Value = "Yearly Change"
+        ws.Range("k1").Value = "Percent Change"
+        ws.Range("l1").Value = "Total Stock Volume"
+        ws.Range("p1").Value = "Ticker"
+        ws.Range("q1").Value = "Value"
+        ws.Range("q2").Value = "Greatest % Increase"
+        ws.Range("q3").Value = "Greatest % Decrease "
+        ws.Range("q4").Value = "Greatest Total Volume"
+        
+        tickercount = 2
+        j = 2
+        
+        rowcount = ws.Cells(Rows.Count, "A").End(x1up).Row
+        
+        For i = 2 To rowcount
+        'if ticker changes then print the results
+            If ws.Cells(i + 1, 1).Value <> ws.Cells(i, 1).Value Then
+                ws.Cells(tickercount, 9).Value = ws.Cells(i, 1).Value
+                ws.Cells(tickercount, 10).Value = ws.Cells(i, 6).Value - ws.Cells(j, 3).Value
+                
+            
+            'store the results in varibles
+            totla = total + ws.Cells(i, 7).Values
+        
+        'handle zero total volume
+        If total = 0 Then
+            'print the results
+            ws.Range("I" & 2 + j).Value = ws.Cells(i, 1).Value
+            ws.Range("J" & 2 + j).Value = 0
+            ws.Range("k" & 2 + j).Value = "%" & 0
+            ws.Range("l" & 2 + j).Value = 0
+            
+            
+            
+        Else
+            'find first non 0 starting value
+            If ws.Cells(start, 3).Value = 0 Then
+            For find_value = start To i
+                If ws.Cells(find_value, 3).vlaue <> 0 Then
+                    start = find_value
+                Exit For
+            End If
+        Next find_value
+    End If
+
+'calc change
+    change = (ws.Cells(i, 6).Value - ws.Cells(start, 3).Value)
+    percentchange = change / ws.Cells(start, 3).Value
+    
+    
+    'next stock ticker
+    start = i + 1
+    
+    'print results
+    ws.Range("i" & 2 + j).Value = ws.Cells(i, 1).Value
+    ws.Range("j" & 2 + j).Value = change
+    ws.Range("j" & 2 + j).NumberFormat = "0.00"
+    ws.Range("k" & 2 + j).Value = percentchange
+    ws.Range("k" & 2 + j).NumberFormat = "0.00%"
+    ws.Range("L" & 2 + j).Value = total
+    
+    'color code (+) = green (-) = red
+    Select Case change
+        Case Is > 0
+            ws.Range("j" & 2 + j).Interior.ColorIndex = 4
+        Case Is < 0
+            ws.Range("j" & 2 + j).Interior.ColorIndex = 3
+        Case Else
+            ws.Range("j" & 2 + j).Interior.ColorIndex = 0
+End Select
+End If
+
+j = j + 1
+
+End If
+        ws.Cells(2, 17).Value = Format(greatincr, "percent")
+        ws.Cells(3, 17).Value = Format(greatdecr, "percet")
+        ws.Cells(2, 17).Value = Format(greatvol, "scientific")
+    
+    Next i
+        ws.Columns("A:Z").AutoFit
+        
+Next ws
+
+End Sub
+
